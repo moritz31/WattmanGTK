@@ -60,30 +60,29 @@ class GPU:
         with open(filename) as origin_file:
             if "OD_SCLK:" in origin_file.readline():
                 # This will not work with VEGA 20 but will work up to Vega10
+                pattern = r"^(\d|\S{1,}):\s{1,}(\d{1,})(MHz|Mhz|mV)\s{1,}(\d{1,})(MHz|Mhz|mV)"
                 # Read GPU clocks
-                match = re.match(r"^(\d|\S{1,}):\s{1,}(\d{1,})(MHz|Mhz|mV)\s{1,}(\d{1,})(MHz|Mhz|mV)", origin_file.readline())
+                match = re.match(pattern, origin_file.readline())
                 while match is not None:
                     self.pstate_clock.append(int(match.group(2)))
                     self.pstate_voltage.append(int(match.group(4)))
-                    match = re.match(r"^(\d|\S{1,}):\s{1,}(\d{1,})(MHz|Mhz|mV)\s{1,}(\d{1,})(MHz|Mhz|mV)",
-                                     origin_file.readline())
+                    match = re.match(pattern,origin_file.readline())
                 # Read Memory clocks
-                match = re.match(r"^(\d|\S{1,}):\s{1,}(\d{1,})(MHz|Mhz|mV)\s{1,}(\d{1,})(MHz|Mhz|mV)", origin_file.readline())
+                match = re.match(pattern,origin_file.readline())
                 while match is not None:
                     self.pmem_clock.append(int(match.group(2)))
                     self.pmem_voltage.append(int(match.group(4)))
-                    match = re.match(r"^(\d|\S{1,}):\s{1,}(\d{1,})(MHz|Mhz|mV)\s{1,}(\d{1,})(MHz|Mhz|mV)",
-                                     origin_file.readline())
+                    match = re.match(pattern,origin_file.readline())
                 # Read limits for GPU, Memory and voltages
-                match = re.match(r"^(\d|\S{1,}):\s{1,}(\d{1,})(MHz|Mhz|mV)\s{1,}(\d{1,})(MHz|Mhz|mV)", origin_file.readline())
+                match = re.match(pattern,origin_file.readline())
                 self.pstate_clockrange.append(int(match.group(2)))
                 self.pstate_clockrange.append(int(match.group(4)))
 
-                match = re.match(r"^(\d|\S{1,}):\s{1,}(\d{1,})(MHz|Mhz|mV)\s{1,}(\d{1,})(MHz|Mhz|mV)", origin_file.readline())
+                match = re.match(pattern,origin_file.readline())
                 self.pmem_clockrange.append(int(match.group(2)))
                 self.pmem_clockrange.append(int(match.group(4)))
 
-                match = re.match(r"^(\d|\S{1,}):\s{1,}(\d{1,})(MHz|Mhz|mV)\s{1,}(\d{1,})(MHz|Mhz|mV)", origin_file.readline())
+                match = re.match(pattern,origin_file.readline())
                 self.volt_range.append(int(match.group(2)))
                 self.volt_range.append(int(match.group(4)))
             else:
@@ -144,11 +143,11 @@ class GPU:
         self.mem_clock, self.mem_state = self.get_current_clock("/pp_dpm_mclk")
         self.mem_utilisation = self.mem_clock / self.pmem_clock[-1]
 
-        if self.fansensors is not None:
+        try:
             self.fan_speed = self.fansensors.read()
             self.fan_speed_pwm = self.fanpwmsensors.read()
             self.fan_speed_utilisation = self.fan_speed_pwm / 255
-        else:
+        except:
             self.fan_speed = None
             self.fan_speed_pwm = None
             self.fan_speed_utilisation = 0
