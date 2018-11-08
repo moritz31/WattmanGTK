@@ -1,6 +1,6 @@
 # WattmanGTK
 This is a Python3 program which uses a simple GTK gui to view, monitor and in the future overclock a Radeon GPU on Linux. 
-![Main screen](https://i.imgur.com/m7vXaaU.png)
+![Main screen](https://i.imgur.com/ahrQrEO.png)
 ## What can it do?
  * View memory and GPU P-states including voltages.
  * Ability to monitor signals from GPU sensors by means of plotting
@@ -11,10 +11,11 @@ This is a Python3 program which uses a simple GTK gui to view, monitor and in th
  * Fan control (this will be a future addition)
  * Monitor mulitple GPU's
 ## Requirements
- * Linux kernel 4.17+ (Ubuntu 18.10 or newer)
+ * Linux kernel 4.8+ (Ubuntu 16.10 or newer)
  * Python3
  * Python3-matplotlib
  * Python3-gi
+ * Python3-setuptools
  * A Radeon card which uses the AMDGPU kernel driver
  * The overdrive kernel parameter must be set.
 ## Usage/ installation
@@ -62,11 +63,10 @@ on BIOS systems: ```# grub2-mkconfig -o /etc/grub2.cfg```
 
 on UEFI systems: ```# grub2-mkconfig -o /etc/grub2-efi.cfg```
 
-Then reboot the machine, if 
+Then reboot the machine. Once rebooted you can check the current featuremask by 
 ```
    printf "0x%08x\n" $(cat /sys/module/amdgpu/parameters/ppfeaturemask)
 ```
-returns the parameter currently in use by the system.
  ### Setting the kernel parameter causes artifacts and glitching
  It could be that setting the kernelparameter can enable features that 
  should not be enabled which could be the cause.
